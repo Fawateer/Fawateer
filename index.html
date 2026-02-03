@@ -1101,105 +1101,6 @@
             font-weight: 700;
             cursor: pointer;
         }
-    
-        /* Auth Enhancements */
-        .login-screen {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .login-screen::before {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            top: -100px;
-            right: -100px;
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .login-form {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .btn-google svg {
-            width: 24px;
-            height: 24px;
-        }
-        
-        .btn-primary.loading,
-        .btn-google.loading {
-            pointer-events: none;
-            opacity: 0.7;
-        }
-        
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: none;
-            margin: 0 auto;
-        }
-        
-        .loading .spinner {
-            display: inline-block;
-            margin-right: 10px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .signup-screen {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 30px;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        }
-        
-        .signup-screen.show {
-            display: flex;
-        }
-        
-        .message-box {
-            display: none;
-            padding: 12px 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            text-align: center;
-        }
-        
-        .message-box.show {
-            display: block;
-        }
-        
-        .message-box.error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #ef4444;
-        }
-        
-        .message-box.success {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: #10b981;
-        }
-
     </style>
 </head>
 <body>
@@ -1215,7 +1116,7 @@
             <h1 class="login-title">نظام إدارة المبيعات</h1>
             <p class="login-subtitle">سجل دخولك لإدارة متجرك بشكل احترافي</p>
             
-            <form class="login-form" id="auth-form">
+            <form class="login-form" id="auth-form" onsubmit="handleAuthSubmit(event)">
                 <div id="auth-error" class="error-message"></div>
                 
                 <!-- Register Fields (Hidden by default) -->
@@ -1518,155 +1419,134 @@
     <script>
         
         // ============================================
-        // Firebase Authentication System
+        // Firebase Authentication
         // ============================================
-        
         let currentUser = null;
+        let isRegistering = false;
 
-        // استمع لتغييرات حالة المصادقة
         window.addEventListener('load', () => {
             if (window.firebaseAuth) {
                 window.firebaseAuth.onAuthStateChanged((user) => {
                     if (user) {
                         currentUser = user;
-                        enterMainApp(user);
+                        proceedToApp(user);
                     } else {
                         currentUser = null;
-                        showLoginScreen();
+                        document.getElementById('auth-screen').classList.add('show');
                     }
                 });
             }
         });
 
-        // تسجيل دخول Google
-        async function handleGoogleLogin() {
-            const btn = event.target.closest('button');
-            btn.classList.add('loading');
-            hideMessages();
-
+        // Google Authentication
+        async function handleGoogleAuth() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            
             try {
                 const user = await window.firebaseAuth.signInWithGoogle();
-                console.log('✅ تسجيل دخول Google ناجح');
+                console.log('✅ Google Auth Success');
             } catch (error) {
-                console.error('❌ خطأ تسجيل دخول Google:', error);
-                const screen = document.getElementById('login-screen').classList.contains('show') ? 'login' : 'signup';
-                showMessage(screen, getErrorMessage(error), 'error');
-                btn.classList.remove('loading');
+                console.error('❌ Google Auth Error:', error);
+                showAuthError(getAuthErrorMessage(error));
+                btn.disabled = false;
+                btn.style.opacity = '1';
             }
         }
 
-        // تسجيل دخول بالإيميل
-        async function handleEmailLogin(e) {
+        // Toggle between login/register
+        function toggleAuthMode() {
+            isRegistering = !isRegistering;
+            const registerFields = document.getElementById('register-fields');
+            const submitBtn = document.getElementById('auth-submit-btn');
+            const switchText = document.getElementById('auth-switch-text');
+            const switchLink = document.getElementById('auth-switch-link');
+            const googleBtnText = document.getElementById('google-btn-text');
+            
+            if (isRegistering) {
+                registerFields.style.display = 'block';
+                submitBtn.textContent = 'إنشاء الحساب';
+                switchText.textContent = 'لديك حساب بالفعل؟';
+                switchLink.textContent = 'تسجيل الدخول';
+                googleBtnText.textContent = 'التسجيل بواسطة Google';
+            } else {
+                registerFields.style.display = 'none';
+                submitBtn.textContent = 'تسجيل الدخول';
+                switchText.textContent = 'ليس لديك حساب؟';
+                switchLink.textContent = 'إنشاء حساب جديد';
+                googleBtnText.textContent = 'تسجيل الدخول بواسطة Google';
+            }
+            
+            document.getElementById('auth-error').style.display = 'none';
+        }
+
+        // Handle form submission
+        async function handleAuthSubmit(e) {
             e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.classList.add('loading');
-            hideMessages();
-
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const submitBtn = document.getElementById('auth-submit-btn');
+            
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+            
             try {
-                const user = await window.firebaseAuth.signInWithEmail(email, password);
-                console.log('✅ تسجيل دخول Email ناجح');
+                if (isRegistering) {
+                    const name = document.getElementById('store-name').value || email.split('@')[0];
+                    await window.firebaseAuth.createAccount(email, password, name);
+                    console.log('✅ Registration Success');
+                } else {
+                    await window.firebaseAuth.signInWithEmail(email, password);
+                    console.log('✅ Login Success');
+                }
             } catch (error) {
-                console.error('❌ خطأ تسجيل دخول Email:', error);
-                showMessage('login', getErrorMessage(error), 'error');
-                btn.classList.remove('loading');
+                console.error('❌ Auth Error:', error);
+                showAuthError(getAuthErrorMessage(error));
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
             }
         }
 
-        // إنشاء حساب جديد
-        async function handleEmailSignup(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.classList.add('loading');
-            hideMessages();
-
-            const name = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-
-            try {
-                const user = await window.firebaseAuth.createAccount(email, password, name);
-                console.log('✅ إنشاء حساب ناجح');
-                showMessage('signup', 'تم إنشاء الحساب بنجاح!', 'success');
-            } catch (error) {
-                console.error('❌ خطأ إنشاء حساب:', error);
-                showMessage('signup', getErrorMessage(error), 'error');
-                btn.classList.remove('loading');
-            }
-        }
-
-        // الدخول للتطبيق الرئيسي
-        function enterMainApp(user) {
+        // Proceed to main app
+        function proceedToApp(user) {
             const userData = {
                 uid: user.uid,
                 name: user.displayName || user.email.split('@')[0],
                 email: user.email,
                 photo: user.photoURL
             };
+            
             localStorage.setItem('userData', JSON.stringify(userData));
-
-            // تحديث بيانات المتجر
+            
             if (!storeData || !storeData.name) {
                 storeData = {
                     name: userData.name,
                     email: userData.email,
-                    phone: storeData?.phone || '',
-                    address: storeData?.address || '',
+                    phone: document.getElementById('store-phone')?.value || '',
+                    address: '',
                     logo: userData.photo || ''
                 };
                 saveData();
             }
-
-            document.getElementById('login-screen').classList.remove('show');
-            document.getElementById('signup-screen').classList.remove('show');
             
+            document.getElementById('auth-screen').classList.remove('show');
             loadData();
             updateDashboard();
-            
-            console.log('✅ دخول التطبيق:', userData);
         }
 
-        // إظهار شاشة تسجيل الدخول
-        function showLoginScreen() {
-            document.getElementById('login-screen').classList.add('show');
-            document.getElementById('signup-screen').classList.remove('show');
-            hideMessages();
+        // Show auth error
+        function showAuthError(message) {
+            const errorDiv = document.getElementById('auth-error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
         }
 
-        // إظهار شاشة التسجيل
-        function showSignup() {
-            document.getElementById('login-screen').classList.remove('show');
-            document.getElementById('signup-screen').classList.add('show');
-            hideMessages();
-        }
-
-        // إظهار شاشة تسجيل الدخول
-        function showLogin() {
-            document.getElementById('signup-screen').classList.remove('show');
-            document.getElementById('login-screen').classList.add('show');
-            hideMessages();
-        }
-
-        // عرض رسالة
-        function showMessage(screen, text, type) {
-            const msgEl = document.getElementById(screen + '-message');
-            if (msgEl) {
-                msgEl.textContent = text;
-                msgEl.className = 'message-box ' + type + ' show';
-            }
-        }
-
-        // إخفاء الرسائل
-        function hideMessages() {
-            document.querySelectorAll('.message-box').forEach(el => {
-                el.classList.remove('show');
-            });
-        }
-
-        // ترجمة أخطاء Firebase
-        function getErrorMessage(error) {
+        // Get error message in Arabic
+        function getAuthErrorMessage(error) {
             const messages = {
                 'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
                 'auth/invalid-email': 'البريد الإلكتروني غير صالح',
@@ -1675,12 +1555,13 @@
                 'auth/weak-password': 'كلمة المرور ضعيفة (6 أحرف على الأقل)',
                 'auth/too-many-requests': 'محاولات كثيرة، حاول لاحقاً',
                 'auth/popup-closed-by-user': 'تم إغلاق النافذة',
-                'auth/popup-blocked': 'تم حظر النافذة المنبثقة'
+                'auth/popup-blocked': 'تم حظر النافذة المنبثقة',
+                'auth/network-request-failed': 'خطأ في الاتصال بالإنترنت'
             };
             return messages[error.code] || 'حدث خطأ، حاول مرة أخرى';
         }
 
-        // تسجيل الخروج (للإضافة في قائمة الإعدادات)
+        // Logout function
         async function handleLogout() {
             if (confirm('هل تريد تسجيل الخروج؟')) {
                 try {
@@ -1689,17 +1570,12 @@
                     products = [];
                     sales = [];
                     storeData = null;
-                    console.log('✅ تسجيل خروج ناجح');
                 } catch (error) {
-                    console.error('❌ خطأ تسجيل الخروج:', error);
+                    console.error('Logout error:', error);
                 }
             }
         }
 
-        // ============================================
-        // باقي الكود الأصلي
-        // ============================================
-        
 // ============================================
         // Firebase Configuration
         // ⚠️ مهم جداً: استبدل هذه القيم بقيم مشروعك من Firebase Console
