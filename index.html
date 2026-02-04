@@ -14,6 +14,7 @@
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* جميع الأنماط السابقة تبقى كما هي بدون تغيير */
         * {
             margin: 0;
             padding: 0;
@@ -1396,145 +1397,290 @@
         let cameraScanner = null;
 
         // ============================================
-        // Initialize Firebase
-        // ============================================
-        try {
-            firebase.initializeApp(firebaseConfig);
-            console.log('✅ Firebase initialized successfully');
-        } catch (error) {
-            console.error('❌ Firebase initialization error:', error);
-            showAuthError('خطأ في إعداد Firebase. تأكد من اتصال الإنترنت.');
-        }
-
-        const auth = firebase.auth();
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
-
-        // ============================================
         // Initialize App
         // ============================================
         document.addEventListener('DOMContentLoaded', function() {
-            initializeEventListeners();
-            checkAuthState();
+            console.log('📱 صفحة التطبيق تم تحميلها');
+            
+            // محاولة تهيئة Firebase بشكل آمن
+            try {
+                // تحقق مما إذا تم تحميل Firebase
+                if (typeof firebase === 'undefined') {
+                    console.error('❌ مكتبة Firebase لم يتم تحميلها');
+                    showAuthError('مكتبة Firebase لم يتم تحميلها. تحقق من اتصال الإنترنت.');
+                    return;
+                }
+                
+                // تهيئة Firebase
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                    console.log('✅ Firebase تم تهيئته بنجاح');
+                } else {
+                    console.log('ℹ️ Firebase مسبقاً');
+                }
+                
+                // متابعة تهيئة التطبيق
+                initializeApp();
+                
+            } catch (error) {
+                console.error('❌ خطأ في تهيئة Firebase:', error);
+                showAuthError('خطأ في إعداد Firebase. تحقق من بيانات التهيئة.');
+            }
         });
 
         // ============================================
-        // Event Listeners
+        // Initialize App Functions
         // ============================================
+        function initializeApp() {
+            try {
+                initializeEventListeners();
+                checkAuthState();
+                console.log('✅ التطبيق تم تهيئته بنجاح');
+            } catch (error) {
+                console.error('❌ خطأ في تهيئة التطبيق:', error);
+            }
+        }
+
         function initializeEventListeners() {
-            // Auth buttons
-            document.getElementById('auth-submit-btn').addEventListener('click', handleAuthSubmit);
-            document.getElementById('google-auth-btn').addEventListener('click', handleGoogleAuth);
-            document.getElementById('auth-switch-link').addEventListener('click', toggleAuthMode);
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            console.log('🔧 بدء إعداد الأزرار...');
             
-            // Product form
-            document.getElementById('add-product-btn').addEventListener('click', addProduct);
-            
-            // Search
-            document.getElementById('search-input').addEventListener('input', searchProducts);
-            
-            // Camera
-            document.getElementById('camera-btn').addEventListener('click', toggleCamera);
-            document.getElementById('logo-upload').addEventListener('change', previewLogo);
-            
-            // Scanner
-            document.getElementById('start-scanner').addEventListener('click', startScanner);
-            document.getElementById('stop-scanner').addEventListener('click', stopScanner);
-            
-            // Sale modal
-            document.getElementById('cancel-sale-btn').addEventListener('click', closeSaleModal);
-            document.getElementById('confirm-sale-btn').addEventListener('click', confirmSale);
-            
-            // Navigation
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    switchTab(this.getAttribute('data-tab'));
+            try {
+                // Auth buttons
+                const authSubmitBtn = document.getElementById('auth-submit-btn');
+                const googleAuthBtn = document.getElementById('google-auth-btn');
+                const authSwitchLink = document.getElementById('auth-switch-link');
+                const logoutBtn = document.getElementById('logout-btn');
+                
+                if (authSubmitBtn) {
+                    authSubmitBtn.addEventListener('click', handleAuthSubmit);
+                    console.log('✅ زر تسجيل الدخول جاهز');
+                }
+                
+                if (googleAuthBtn) {
+                    googleAuthBtn.addEventListener('click', handleGoogleAuth);
+                    console.log('✅ زر Google جاهز');
+                }
+                
+                if (authSwitchLink) {
+                    authSwitchLink.addEventListener('click', toggleAuthMode);
+                    console.log('✅ زر تبديل الحساب جاهز');
+                }
+                
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', handleLogout);
+                    console.log('✅ زر تسجيل الخروج جاهز');
+                }
+                
+                // Product form
+                const addProductBtn = document.getElementById('add-product-btn');
+                if (addProductBtn) {
+                    addProductBtn.addEventListener('click', addProduct);
+                    console.log('✅ زر إضافة منتج جاهز');
+                }
+                
+                // Search
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) {
+                    searchInput.addEventListener('input', searchProducts);
+                    console.log('✅ مربع البحث جاهز');
+                }
+                
+                // Camera
+                const cameraBtn = document.getElementById('camera-btn');
+                const logoUpload = document.getElementById('logo-upload');
+                
+                if (cameraBtn) {
+                    cameraBtn.addEventListener('click', toggleCamera);
+                    console.log('✅ زر الكاميرا جاهز');
+                }
+                
+                if (logoUpload) {
+                    logoUpload.addEventListener('change', previewLogo);
+                    console.log('✅ رفع الصورة جاهز');
+                }
+                
+                // Scanner
+                const startScannerBtn = document.getElementById('start-scanner');
+                const stopScannerBtn = document.getElementById('stop-scanner');
+                
+                if (startScannerBtn) {
+                    startScannerBtn.addEventListener('click', startScanner);
+                    console.log('✅ زر تشغيل الماسح جاهز');
+                }
+                
+                if (stopScannerBtn) {
+                    stopScannerBtn.addEventListener('click', stopScanner);
+                    console.log('✅ زر إيقاف الماسح جاهز');
+                }
+                
+                // Sale modal
+                const cancelSaleBtn = document.getElementById('cancel-sale-btn');
+                const confirmSaleBtn = document.getElementById('confirm-sale-btn');
+                
+                if (cancelSaleBtn) {
+                    cancelSaleBtn.addEventListener('click', closeSaleModal);
+                    console.log('✅ زر إلغاء البيع جاهز');
+                }
+                
+                if (confirmSaleBtn) {
+                    confirmSaleBtn.addEventListener('click', confirmSale);
+                    console.log('✅ زر تأكيد البيع جاهز');
+                }
+                
+                // Navigation
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(item => {
+                    item.addEventListener('click', function() {
+                        const tabName = this.getAttribute('data-tab');
+                        console.log(`🔀 تبديل إلى تبويب: ${tabName}`);
+                        switchTab(tabName);
+                    });
                 });
-            });
-            
-            // Reports
-            document.getElementById('month-select').addEventListener('change', updateMonthlyReport);
+                console.log(`✅ ${navItems.length} أزرار تنقل جاهزة`);
+                
+                // Reports
+                const monthSelect = document.getElementById('month-select');
+                if (monthSelect) {
+                    monthSelect.addEventListener('change', updateMonthlyReport);
+                    console.log('✅ اختيار الشهر جاهز');
+                }
+                
+                // Form submit prevention
+                const authForm = document.getElementById('auth-form');
+                const addProductForm = document.getElementById('add-product-form');
+                
+                if (authForm) {
+                    authForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                    });
+                }
+                
+                if (addProductForm) {
+                    addProductForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                    });
+                }
+                
+                console.log('✅ جميع الأزارة جاهزة للعمل!');
+                
+            } catch (error) {
+                console.error('❌ خطأ في إعداد الأزرار:', error);
+            }
         }
 
         // ============================================
         // Authentication Functions
         // ============================================
         function checkAuthState() {
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    currentUser = user;
-                    console.log('✅ User logged in:', user.email);
-                    loadUserData();
-                    showMainApp();
-                } else {
-                    currentUser = null;
-                    console.log('🔒 User logged out');
-                    showAuthScreen();
+            try {
+                if (typeof firebase === 'undefined' || !firebase.auth) {
+                    console.error('❌ Firebase Auth غير متوفر');
+                    return;
                 }
-            });
+                
+                firebase.auth().onAuthStateChanged((user) => {
+                    if (user) {
+                        console.log('✅ مستخدم مسجل دخول:', user.email);
+                        currentUser = user;
+                        loadUserData();
+                        showMainApp();
+                    } else {
+                        console.log('🔒 لا يوجد مستخدم مسجل دخول');
+                        currentUser = null;
+                        showAuthScreen();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ خطأ في التحقق من حالة المصادقة:', error);
+                showAuthScreen();
+            }
         }
 
         function showAuthScreen() {
-            document.getElementById('auth-screen').classList.add('show');
-            document.getElementById('main-app').classList.remove('active');
-            clearAuthForm();
+            try {
+                document.getElementById('auth-screen').classList.add('show');
+                document.getElementById('main-app').classList.remove('active');
+                clearAuthForm();
+                console.log('🔐 عرض شاشة التسجيل');
+            } catch (error) {
+                console.error('❌ خطأ في عرض شاشة التسجيل:', error);
+            }
         }
 
         function showMainApp() {
-            document.getElementById('auth-screen').classList.remove('show');
-            document.getElementById('main-app').classList.add('active');
-            updateDashboard();
-            displayProductsList();
-            updateReports();
+            try {
+                document.getElementById('auth-screen').classList.remove('show');
+                document.getElementById('main-app').classList.add('active');
+                updateDashboard();
+                displayProductsList();
+                updateReports();
+                console.log('📊 عرض التطبيق الرئيسي');
+            } catch (error) {
+                console.error('❌ خطأ في عرض التطبيق الرئيسي:', error);
+            }
         }
 
         function toggleAuthMode() {
-            isRegisterMode = !isRegisterMode;
-            const registerFields = document.getElementById('register-fields');
-            const submitBtn = document.getElementById('auth-submit-btn');
-            const switchText = document.getElementById('auth-switch-text');
-            const switchLink = document.getElementById('auth-switch-link');
-            const googleBtnText = document.getElementById('google-btn-text');
-            
-            if (isRegisterMode) {
-                registerFields.style.display = 'block';
-                submitBtn.textContent = 'إنشاء حساب';
-                switchText.textContent = 'لديك حساب بالفعل؟';
-                switchLink.textContent = 'تسجيل الدخول';
-                googleBtnText.textContent = 'التسجيل بواسطة Google';
-            } else {
-                registerFields.style.display = 'none';
-                submitBtn.textContent = 'تسجيل الدخول';
-                switchText.textContent = 'ليس لديك حساب؟';
-                switchLink.textContent = 'إنشاء حساب جديد';
-                googleBtnText.textContent = 'تسجيل الدخول بواسطة Google';
+            try {
+                isRegisterMode = !isRegisterMode;
+                const registerFields = document.getElementById('register-fields');
+                const submitBtn = document.getElementById('auth-submit-btn');
+                const switchText = document.getElementById('auth-switch-text');
+                const switchLink = document.getElementById('auth-switch-link');
+                const googleBtnText = document.getElementById('google-btn-text');
+                
+                if (isRegisterMode) {
+                    registerFields.style.display = 'block';
+                    submitBtn.textContent = 'إنشاء حساب';
+                    switchText.textContent = 'لديك حساب بالفعل؟';
+                    switchLink.textContent = 'تسجيل الدخول';
+                    googleBtnText.textContent = 'التسجيل بواسطة Google';
+                    console.log('📝 تبديل إلى وضع التسجيل');
+                } else {
+                    registerFields.style.display = 'none';
+                    submitBtn.textContent = 'تسجيل الدخول';
+                    switchText.textContent = 'ليس لديك حساب؟';
+                    switchLink.textContent = 'إنشاء حساب جديد';
+                    googleBtnText.textContent = 'تسجيل الدخول بواسطة Google';
+                    console.log('🔑 تبديل إلى وضع تسجيل الدخول');
+                }
+                
+                clearAuthError();
+            } catch (error) {
+                console.error('❌ خطأ في تبديل وضع المصادقة:', error);
             }
-            
-            clearAuthError();
         }
 
         async function handleAuthSubmit() {
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
-            const submitBtn = document.getElementById('auth-submit-btn');
-            
-            clearAuthError();
-            
-            if (!email || !password) {
-                showAuthError('الرجاء ملء جميع الحقول');
-                return;
-            }
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading"></span>';
-            
             try {
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                const submitBtn = document.getElementById('auth-submit-btn');
+                
+                clearAuthError();
+                
+                if (!email || !password) {
+                    showAuthError('الرجاء ملء جميع الحقول');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    showAuthError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                    return;
+                }
+                
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="loading"></span>';
+                
                 if (isRegisterMode) {
                     // Register new user
                     const storeName = document.getElementById('store-name').value || email.split('@')[0];
                     const storePhone = document.getElementById('store-phone').value;
                     
-                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    console.log('📝 محاولة إنشاء حساب...');
+                    
+                    const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
                     
                     // Update profile
                     await userCredential.user.updateProfile({
@@ -1551,28 +1697,53 @@
                     
                     saveStoreData();
                     
+                    console.log('✅ حساب جديد تم إنشاؤه:', email);
+                    showMessage('تم إنشاء الحساب بنجاح!', 'success');
+                    
                 } else {
                     // Login existing user
-                    await auth.signInWithEmailAndPassword(email, password);
+                    console.log('🔑 محاولة تسجيل الدخول...');
+                    
+                    await firebase.auth().signInWithEmailAndPassword(email, password);
+                    
+                    console.log('✅ تسجيل الدخول ناجح:', email);
+                    showMessage('تم تسجيل الدخول بنجاح!', 'success');
                 }
                 
-                showMessage('تمت العملية بنجاح', 'success');
-                
-            } catch (error) {
-                console.error('Auth error:', error);
-                showAuthError(getAuthErrorMessage(error));
                 submitBtn.disabled = false;
                 submitBtn.textContent = isRegisterMode ? 'إنشاء حساب' : 'تسجيل الدخول';
+                
+            } catch (error) {
+                console.error('❌ خطأ في المصادقة:', error);
+                showAuthError(getAuthErrorMessage(error));
+                
+                const submitBtn = document.getElementById('auth-submit-btn');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = isRegisterMode ? 'إنشاء حساب' : 'تسجيل الدخول';
+                }
             }
         }
 
         async function handleGoogleAuth() {
-            const btn = document.getElementById('google-auth-btn');
-            btn.disabled = true;
-            
             try {
-                const result = await auth.signInWithPopup(googleProvider);
+                const btn = document.getElementById('google-auth-btn');
+                btn.disabled = true;
+                
+                console.log('🔵 محاولة تسجيل الدخول بواسطة Google...');
+                
+                // إنشاء موفر Google
+                const provider = new firebase.auth.GoogleAuthProvider();
+                
+                // إضافة نطاقات إضافية إذا لزم الأمر
+                provider.addScope('email');
+                provider.addScope('profile');
+                
+                // تسجيل الدخول باستخدام popup
+                const result = await firebase.auth().signInWithPopup(provider);
                 const user = result.user;
+                
+                console.log('✅ تسجيل الدخول بجوجل ناجح:', user.email);
                 
                 // Check if store data exists
                 const storedData = localStorage.getItem(`storeData_${user.uid}`);
@@ -1586,33 +1757,49 @@
                     saveStoreData();
                 }
                 
-                showMessage('تم تسجيل الدخول بنجاح', 'success');
-            } catch (error) {
-                console.error('Google auth error:', error);
-                showAuthError(getAuthErrorMessage(error));
+                showMessage('تم تسجيل الدخول بواسطة Google بنجاح!', 'success');
+                
                 btn.disabled = false;
+                
+            } catch (error) {
+                console.error('❌ خطأ في تسجيل الدخول بجوجل:', error);
+                showAuthError(getAuthErrorMessage(error));
+                
+                const btn = document.getElementById('google-auth-btn');
+                if (btn) {
+                    btn.disabled = false;
+                }
             }
         }
 
         async function handleLogout() {
-            if (confirm('هل تريد تسجيل الخروج؟')) {
-                try {
+            try {
+                if (confirm('هل تريد تسجيل الخروج؟')) {
+                    console.log('🚪 محاولة تسجيل الخروج...');
+                    
                     stopScanner();
                     stopCamera();
-                    await auth.signOut();
+                    
+                    await firebase.auth().signOut();
+                    
                     localStorage.removeItem('currentUserData');
                     products = [];
                     sales = [];
                     storeData = null;
                     currentUser = null;
+                    
+                    console.log('✅ تسجيل الخروج ناجح');
                     showMessage('تم تسجيل الخروج بنجاح', 'success');
-                } catch (error) {
-                    console.error('Logout error:', error);
                 }
+            } catch (error) {
+                console.error('❌ خطأ في تسجيل الخروج:', error);
+                alert('حدث خطأ أثناء تسجيل الخروج');
             }
         }
 
         function getAuthErrorMessage(error) {
+            console.log('رمز الخطأ:', error.code);
+            
             const messages = {
                 'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
                 'auth/invalid-email': 'البريد الإلكتروني غير صالح',
@@ -1620,51 +1807,80 @@
                 'auth/wrong-password': 'كلمة المرور غير صحيحة',
                 'auth/weak-password': 'كلمة المرور ضعيفة (6 أحرف على الأقل)',
                 'auth/too-many-requests': 'محاولات كثيرة، حاول لاحقاً',
-                'auth/popup-closed-by-user': 'تم إغلاق النافذة',
+                'auth/popup-closed-by-user': 'تم إغلاق نافذة تسجيل الدخول',
                 'auth/network-request-failed': 'خطأ في الاتصال بالإنترنت',
-                'auth/popup-blocked': 'تم حظر النافذة المنبثقة'
+                'auth/popup-blocked': 'تم حظر النافذة المنبثقة، يرجى السماح بالنوافذ المنبثقة',
+                'auth/operation-not-allowed': 'هذه العملية غير مسموحة',
+                'auth/user-disabled': 'هذا الحساب معطل',
+                'auth/requires-recent-login': 'يتطلب تسجيل الدخول مؤخراً'
             };
-            return messages[error.code] || 'حدث خطأ، حاول مرة أخرى';
+            
+            return messages[error.code] || 'حدث خطأ غير متوقع، حاول مرة أخرى';
         }
 
         // ============================================
         // Data Management
         // ============================================
         function loadUserData() {
-            if (!currentUser) return;
-            
-            // Load store data
-            const storedStoreData = localStorage.getItem(`storeData_${currentUser.uid}`);
-            if (storedStoreData) {
-                storeData = JSON.parse(storedStoreData);
-                updateHeader();
+            try {
+                if (!currentUser) return;
+                
+                console.log('📂 تحميل بيانات المستخدم...');
+                
+                // Load store data
+                const storedStoreData = localStorage.getItem(`storeData_${currentUser.uid}`);
+                if (storedStoreData) {
+                    storeData = JSON.parse(storedStoreData);
+                    updateHeader();
+                    console.log('✅ بيانات المتجر محملة');
+                }
+                
+                // Load products
+                const storedProducts = localStorage.getItem(`products_${currentUser.uid}`);
+                products = storedProducts ? JSON.parse(storedProducts) : [];
+                console.log(`✅ ${products.length} منتج محمل`);
+                
+                // Load sales
+                const storedSales = localStorage.getItem(`sales_${currentUser.uid}`);
+                sales = storedSales ? JSON.parse(storedSales) : [];
+                console.log(`✅ ${sales.length} عملية بيع محملة`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في تحميل بيانات المستخدم:', error);
             }
-            
-            // Load products
-            const storedProducts = localStorage.getItem(`products_${currentUser.uid}`);
-            products = storedProducts ? JSON.parse(storedProducts) : [];
-            
-            // Load sales
-            const storedSales = localStorage.getItem(`sales_${currentUser.uid}`);
-            sales = storedSales ? JSON.parse(storedSales) : [];
         }
 
         function saveStoreData() {
-            if (currentUser && storeData) {
-                localStorage.setItem(`storeData_${currentUser.uid}`, JSON.stringify(storeData));
-                updateHeader();
+            try {
+                if (currentUser && storeData) {
+                    localStorage.setItem(`storeData_${currentUser.uid}`, JSON.stringify(storeData));
+                    updateHeader();
+                    console.log('✅ بيانات المتجر محفوظة');
+                }
+            } catch (error) {
+                console.error('❌ خطأ في حفظ بيانات المتجر:', error);
             }
         }
 
         function saveProducts() {
-            if (currentUser) {
-                localStorage.setItem(`products_${currentUser.uid}`, JSON.stringify(products));
+            try {
+                if (currentUser) {
+                    localStorage.setItem(`products_${currentUser.uid}`, JSON.stringify(products));
+                    console.log('✅ المنتجات محفوظة');
+                }
+            } catch (error) {
+                console.error('❌ خطأ في حفظ المنتجات:', error);
             }
         }
 
         function saveSales() {
-            if (currentUser) {
-                localStorage.setItem(`sales_${currentUser.uid}`, JSON.stringify(sales));
+            try {
+                if (currentUser) {
+                    localStorage.setItem(`sales_${currentUser.uid}`, JSON.stringify(sales));
+                    console.log('✅ عمليات البيع محفوظة');
+                }
+            } catch (error) {
+                console.error('❌ خطأ في حفظ عمليات البيع:', error);
             }
         }
 
@@ -1672,261 +1888,341 @@
         // UI Functions
         // ============================================
         function updateHeader() {
-            if (storeData) {
-                document.getElementById('header-store-name').textContent = storeData.name || 'متجري';
-                document.getElementById('header-store-phone').textContent = storeData.phone || '01XXXXXXXXX';
-                
-                if (storeData.logo) {
-                    document.getElementById('header-logo').innerHTML = `<img src="${storeData.logo}" alt="Logo">`;
+            try {
+                if (storeData) {
+                    document.getElementById('header-store-name').textContent = storeData.name || 'متجري';
+                    document.getElementById('header-store-phone').textContent = storeData.phone || '01XXXXXXXXX';
+                    
+                    if (storeData.logo) {
+                        document.getElementById('header-logo').innerHTML = `<img src="${storeData.logo}" alt="Logo">`;
+                    }
+                    console.log('✅ الهيدر تم تحديثه');
                 }
+            } catch (error) {
+                console.error('❌ خطأ في تحديث الهيدر:', error);
             }
         }
 
         function switchTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // Remove active class from all nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Show selected tab
-            document.getElementById(`${tabName}-tab`).classList.add('active');
-            
-            // Add active class to clicked nav item
-            event.currentTarget.classList.add('active');
-            
-            // Stop scanner if leaving scanner tab
-            if (tabName !== 'scanner') {
-                stopScanner();
-            }
-            
-            // Update data based on tab
-            if (tabName === 'dashboard') {
-                updateDashboard();
-            } else if (tabName === 'reports') {
-                updateReports();
+            try {
+                console.log(`🔀 التبديل إلى: ${tabName}`);
+                
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Show selected tab
+                const selectedTab = document.getElementById(`${tabName}-tab`);
+                if (selectedTab) {
+                    selectedTab.classList.add('active');
+                }
+                
+                // Add active class to clicked nav item
+                if (event && event.currentTarget) {
+                    event.currentTarget.classList.add('active');
+                }
+                
+                // Stop scanner if leaving scanner tab
+                if (tabName !== 'scanner') {
+                    stopScanner();
+                }
+                
+                // Update data based on tab
+                if (tabName === 'dashboard') {
+                    updateDashboard();
+                } else if (tabName === 'reports') {
+                    updateReports();
+                }
+                
+                console.log(`✅ تم التبديل إلى ${tabName} بنجاح`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في تبديل التبويبات:', error);
             }
         }
 
         function showMessage(message, type = 'success') {
-            const messageEl = document.getElementById('success-message');
-            messageEl.textContent = message;
-            messageEl.classList.add('show');
-            
-            if (type === 'error') {
-                messageEl.style.background = 'rgba(239, 68, 68, 0.1)';
-                messageEl.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-                messageEl.style.color = '#ef4444';
-            } else {
-                messageEl.style.background = 'rgba(16, 185, 129, 0.1)';
-                messageEl.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-                messageEl.style.color = '#10b981';
+            try {
+                const messageEl = document.getElementById('success-message');
+                if (!messageEl) return;
+                
+                messageEl.textContent = message;
+                messageEl.classList.add('show');
+                
+                if (type === 'error') {
+                    messageEl.style.background = 'rgba(239, 68, 68, 0.1)';
+                    messageEl.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                    messageEl.style.color = '#ef4444';
+                } else {
+                    messageEl.style.background = 'rgba(16, 185, 129, 0.1)';
+                    messageEl.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                    messageEl.style.color = '#10b981';
+                }
+                
+                console.log(`💬 رسالة: ${message}`);
+                
+                setTimeout(() => {
+                    messageEl.classList.remove('show');
+                }, 3000);
+            } catch (error) {
+                console.error('❌ خطأ في عرض الرسالة:', error);
             }
-            
-            setTimeout(() => {
-                messageEl.classList.remove('show');
-            }, 3000);
         }
 
         function showAuthError(message) {
-            const errorEl = document.getElementById('auth-error');
-            errorEl.textContent = message;
-            errorEl.classList.add('show');
+            try {
+                const errorEl = document.getElementById('auth-error');
+                if (errorEl) {
+                    errorEl.textContent = message;
+                    errorEl.classList.add('show');
+                    console.log(`❌ خطأ في المصادقة: ${message}`);
+                }
+            } catch (error) {
+                console.error('❌ خطأ في عرض خطأ المصادقة:', error);
+            }
         }
 
         function clearAuthError() {
-            const errorEl = document.getElementById('auth-error');
-            errorEl.classList.remove('show');
-            errorEl.textContent = '';
+            try {
+                const errorEl = document.getElementById('auth-error');
+                if (errorEl) {
+                    errorEl.classList.remove('show');
+                    errorEl.textContent = '';
+                }
+            } catch (error) {
+                console.error('❌ خطأ في مسح خطأ المصادقة:', error);
+            }
         }
 
         function clearAuthForm() {
-            document.getElementById('auth-email').value = '';
-            document.getElementById('auth-password').value = '';
-            document.getElementById('store-name').value = '';
-            document.getElementById('store-phone').value = '';
-            document.getElementById('auth-submit-btn').disabled = false;
-            document.getElementById('auth-submit-btn').textContent = 'تسجيل الدخول';
-            isRegisterMode = false;
-            document.getElementById('register-fields').style.display = 'none';
-            document.getElementById('auth-switch-text').textContent = 'ليس لديك حساب؟';
-            document.getElementById('auth-switch-link').textContent = 'إنشاء حساب جديد';
-            clearAuthError();
+            try {
+                document.getElementById('auth-email').value = '';
+                document.getElementById('auth-password').value = '';
+                document.getElementById('store-name').value = '';
+                document.getElementById('store-phone').value = '';
+                
+                const submitBtn = document.getElementById('auth-submit-btn');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'تسجيل الدخول';
+                }
+                
+                isRegisterMode = false;
+                document.getElementById('register-fields').style.display = 'none';
+                document.getElementById('auth-switch-text').textContent = 'ليس لديك حساب؟';
+                document.getElementById('auth-switch-link').textContent = 'إنشاء حساب جديد';
+                clearAuthError();
+                
+                console.log('✅ نموذج المصادقة تم مسحه');
+            } catch (error) {
+                console.error('❌ خطأ في مسح نموذج المصادقة:', error);
+            }
         }
 
         // ============================================
         // Product Management
         // ============================================
         function addProduct() {
-            const name = document.getElementById('product-name').value;
-            const price = parseFloat(document.getElementById('product-price').value);
-            const barcode = document.getElementById('product-barcode').value;
-            
-            if (!name || !price || !barcode) {
-                showMessage('الرجاء ملء جميع الحقول', 'error');
-                return;
+            try {
+                const name = document.getElementById('product-name').value;
+                const price = parseFloat(document.getElementById('product-price').value);
+                const barcode = document.getElementById('product-barcode').value;
+                
+                if (!name || !price || !barcode) {
+                    showMessage('الرجاء ملء جميع الحقول', 'error');
+                    return;
+                }
+                
+                if (price <= 0) {
+                    showMessage('السعر يجب أن يكون أكبر من صفر', 'error');
+                    return;
+                }
+                
+                // Check if barcode exists
+                const existingProduct = products.find(p => p.barcode === barcode);
+                if (existingProduct) {
+                    showMessage('رقم الباركود موجود بالفعل', 'error');
+                    return;
+                }
+                
+                const product = {
+                    id: Date.now().toString(),
+                    name: name,
+                    price: price,
+                    barcode: barcode,
+                    createdAt: new Date().toISOString()
+                };
+                
+                products.push(product);
+                saveProducts();
+                
+                // Reset form
+                document.getElementById('product-name').value = '';
+                document.getElementById('product-price').value = '';
+                document.getElementById('product-barcode').value = '';
+                
+                console.log(`✅ منتج جديد: ${name}`);
+                showMessage('تم إضافة المنتج بنجاح');
+                displayProductsList();
+                updateDashboard();
+                
+            } catch (error) {
+                console.error('❌ خطأ في إضافة المنتج:', error);
+                showMessage('حدث خطأ في إضافة المنتج', 'error');
             }
-            
-            if (price <= 0) {
-                showMessage('السعر يجب أن يكون أكبر من صفر', 'error');
-                return;
-            }
-            
-            // Check if barcode exists
-            const existingProduct = products.find(p => p.barcode === barcode);
-            if (existingProduct) {
-                showMessage('رقم الباركود موجود بالفعل', 'error');
-                return;
-            }
-            
-            const product = {
-                id: Date.now().toString(),
-                name: name,
-                price: price,
-                barcode: barcode,
-                createdAt: new Date().toISOString()
-            };
-            
-            products.push(product);
-            saveProducts();
-            
-            // Reset form
-            document.getElementById('product-name').value = '';
-            document.getElementById('product-price').value = '';
-            document.getElementById('product-barcode').value = '';
-            
-            showMessage('تم إضافة المنتج بنجاح');
-            displayProductsList();
-            updateDashboard();
         }
 
         function displayProductsList() {
-            const productList = document.getElementById('product-list');
-            
-            if (products.length === 0) {
-                productList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"></path>
-                            </svg>
+            try {
+                const productList = document.getElementById('product-list');
+                if (!productList) return;
+                
+                if (products.length === 0) {
+                    productList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"></path>
+                                </svg>
+                            </div>
+                            <div class="empty-state-text">لا توجد منتجات بعد<br>ابدأ بإضافة منتج جديد</div>
                         </div>
-                        <div class="empty-state-text">لا توجد منتجات بعد<br>ابدأ بإضافة منتج جديد</div>
+                    `;
+                    return;
+                }
+                
+                productList.innerHTML = products.map(product => `
+                    <div class="product-item">
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-barcode">${product.barcode}</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="product-price">${product.price.toFixed(2)} ج.م</div>
+                            <div class="product-actions">
+                                <div class="btn-icon btn-sell" data-id="${product.id}">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+                                    </svg>
+                                </div>
+                                <div class="btn-icon btn-delete" data-id="${product.id}">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                `;
-                return;
+                `).join('');
+                
+                // Add event listeners to sell buttons
+                document.querySelectorAll('.btn-sell').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-id');
+                        showSaleModal(productId);
+                    });
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-id');
+                        deleteProduct(productId);
+                    });
+                });
+                
+                console.log(`✅ عرض ${products.length} منتج`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في عرض المنتجات:', error);
             }
-            
-            productList.innerHTML = products.map(product => `
-                <div class="product-item">
-                    <div class="product-info">
-                        <div class="product-name">${product.name}</div>
-                        <div class="product-barcode">${product.barcode}</div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="product-price">${product.price.toFixed(2)} ج.م</div>
-                        <div class="product-actions">
-                            <div class="btn-icon btn-sell" data-id="${product.id}">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-                                </svg>
-                            </div>
-                            <div class="btn-icon btn-delete" data-id="${product.id}">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            // Add event listeners to sell buttons
-            document.querySelectorAll('.btn-sell').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-id');
-                    showSaleModal(productId);
-                });
-            });
-            
-            // Add event listeners to delete buttons
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-id');
-                    deleteProduct(productId);
-                });
-            });
         }
 
         function searchProducts() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const filtered = products.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.barcode.includes(searchTerm)
-            );
-            
-            const productList = document.getElementById('product-list');
-            
-            if (filtered.length === 0) {
-                productList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-text">لا توجد نتائج للبحث</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            productList.innerHTML = filtered.map(product => `
-                <div class="product-item">
-                    <div class="product-info">
-                        <div class="product-name">${product.name}</div>
-                        <div class="product-barcode">${product.barcode}</div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="product-price">${product.price.toFixed(2)} ج.م</div>
-                        <div class="product-actions">
-                            <div class="btn-icon btn-sell" data-id="${product.id}">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-                                </svg>
-                            </div>
-                            <div class="btn-icon btn-delete" data-id="${product.id}">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
-                                </svg>
+            try {
+                const searchTerm = document.getElementById('search-input').value.toLowerCase();
+                const filtered = products.filter(p => 
+                    p.name.toLowerCase().includes(searchTerm) || 
+                    p.barcode.includes(searchTerm)
+                );
+                
+                const productList = document.getElementById('product-list');
+                if (!productList) return;
+                
+                if (filtered.length === 0) {
+                    productList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-text">لا توجد نتائج للبحث</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                productList.innerHTML = filtered.map(product => `
+                    <div class="product-item">
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-barcode">${product.barcode}</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="product-price">${product.price.toFixed(2)} ج.م</div>
+                            <div class="product-actions">
+                                <div class="btn-icon btn-sell" data-id="${product.id}">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+                                    </svg>
+                                </div>
+                                <div class="btn-icon btn-delete" data-id="${product.id}">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
-            
-            // Re-add event listeners
-            document.querySelectorAll('.btn-sell').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-id');
-                    showSaleModal(productId);
+                `).join('');
+                
+                // Re-add event listeners
+                document.querySelectorAll('.btn-sell').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-id');
+                        showSaleModal(productId);
+                    });
                 });
-            });
-            
-            document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-id');
-                    deleteProduct(productId);
+                
+                document.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-id');
+                        deleteProduct(productId);
+                    });
                 });
-            });
+                
+                console.log(`🔍 نتائج البحث: ${filtered.length} منتج`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في البحث:', error);
+            }
         }
 
         function deleteProduct(productId) {
-            if (confirm('هل تريد حذف هذا المنتج؟')) {
-                products = products.filter(p => p.id !== productId);
-                saveProducts();
-                displayProductsList();
-                updateDashboard();
-                showMessage('تم حذف المنتج بنجاح');
+            try {
+                if (confirm('هل تريد حذف هذا المنتج؟')) {
+                    products = products.filter(p => p.id !== productId);
+                    saveProducts();
+                    displayProductsList();
+                    updateDashboard();
+                    showMessage('تم حذف المنتج بنجاح');
+                    console.log(`🗑️ منتج تم حذفه: ${productId}`);
+                }
+            } catch (error) {
+                console.error('❌ خطأ في حذف المنتج:', error);
+                showMessage('حدث خطأ في حذف المنتج', 'error');
             }
         }
 
@@ -1934,259 +2230,319 @@
         // Sales Management
         // ============================================
         function showSaleModal(productId) {
-            currentScannedProduct = products.find(p => p.id === productId);
-            if (!currentScannedProduct) return;
-            
-            const modalContent = document.getElementById('sale-modal-content');
-            modalContent.innerHTML = `
-                <div class="report-item">
-                    <div class="report-label">المنتج</div>
-                    <div class="report-value">${currentScannedProduct.name}</div>
-                </div>
-                <div class="report-item">
-                    <div class="report-label">الباركود</div>
-                    <div class="report-value">${currentScannedProduct.barcode}</div>
-                </div>
-                <div class="report-item">
-                    <div class="report-label">السعر</div>
-                    <div class="report-value">${currentScannedProduct.price.toFixed(2)} ج.م</div>
-                </div>
-            `;
-            
-            document.getElementById('sale-modal').classList.add('show');
+            try {
+                currentScannedProduct = products.find(p => p.id === productId);
+                if (!currentScannedProduct) return;
+                
+                const modalContent = document.getElementById('sale-modal-content');
+                if (!modalContent) return;
+                
+                modalContent.innerHTML = `
+                    <div class="report-item">
+                        <div class="report-label">المنتج</div>
+                        <div class="report-value">${currentScannedProduct.name}</div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-label">الباركود</div>
+                        <div class="report-value">${currentScannedProduct.barcode}</div>
+                    </div>
+                    <div class="report-item">
+                        <div class="report-label">السعر</div>
+                        <div class="report-value">${currentScannedProduct.price.toFixed(2)} ج.م</div>
+                    </div>
+                `;
+                
+                document.getElementById('sale-modal').classList.add('show');
+                console.log(`💰 عرض بيع: ${currentScannedProduct.name}`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في عرض نافذة البيع:', error);
+            }
         }
 
         function closeSaleModal() {
-            document.getElementById('sale-modal').classList.remove('show');
-            currentScannedProduct = null;
+            try {
+                document.getElementById('sale-modal').classList.remove('show');
+                currentScannedProduct = null;
+                console.log('❌ نافذة البيع أغلقت');
+            } catch (error) {
+                console.error('❌ خطأ في إغلاق نافذة البيع:', error);
+            }
         }
 
         function confirmSale() {
-            if (!currentScannedProduct) return;
-            
-            const sale = {
-                id: Date.now().toString(),
-                productId: currentScannedProduct.id,
-                productName: currentScannedProduct.name,
-                price: currentScannedProduct.price,
-                barcode: currentScannedProduct.barcode,
-                date: new Date().toISOString()
-            };
-            
-            sales.push(sale);
-            saveSales();
-            closeSaleModal();
-            updateDashboard();
-            
-            showMessage('تمت عملية البيع بنجاح');
+            try {
+                if (!currentScannedProduct) return;
+                
+                const sale = {
+                    id: Date.now().toString(),
+                    productId: currentScannedProduct.id,
+                    productName: currentScannedProduct.name,
+                    price: currentScannedProduct.price,
+                    barcode: currentScannedProduct.barcode,
+                    date: new Date().toISOString()
+                };
+                
+                sales.push(sale);
+                saveSales();
+                closeSaleModal();
+                updateDashboard();
+                
+                console.log(`✅ بيع مؤكد: ${currentScannedProduct.name} - ${currentScannedProduct.price} ج.م`);
+                showMessage('تمت عملية البيع بنجاح');
+                
+            } catch (error) {
+                console.error('❌ خطأ في تأكيد البيع:', error);
+                showMessage('حدث خطأ في عملية البيع', 'error');
+            }
         }
 
         // ============================================
         // Dashboard Functions
         // ============================================
         function updateDashboard() {
-            // Update stats
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            
-            const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
-            
-            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-            
-            // Today's sales
-            const todaySales = sales.filter(s => {
-                const saleDate = new Date(s.date);
-                saleDate.setHours(0, 0, 0, 0);
-                return saleDate.getTime() === today.getTime();
-            });
-            const todayTotal = todaySales.reduce((sum, s) => sum + s.price, 0);
-            document.getElementById('today-sales').textContent = todayTotal.toFixed(2);
-            
-            // Yesterday's sales
-            const yesterdaySales = sales.filter(s => {
-                const saleDate = new Date(s.date);
-                saleDate.setHours(0, 0, 0, 0);
-                return saleDate.getTime() === yesterday.getTime();
-            });
-            const yesterdayTotal = yesterdaySales.reduce((sum, s) => sum + s.price, 0);
-            document.getElementById('yesterday-sales').textContent = yesterdayTotal.toFixed(2);
-            
-            // Month's sales
-            const monthSales = sales.filter(s => new Date(s.date) >= monthStart);
-            const monthTotal = monthSales.reduce((sum, s) => sum + s.price, 0);
-            document.getElementById('month-sales').textContent = monthTotal.toFixed(2);
-            
-            // Total products
-            document.getElementById('total-products').textContent = products.length;
-            
-            // Update sales list
-            displaySalesList();
-        }
-
-        function filterSales(filter) {
-            currentFilter = filter;
-            
-            // Update filter buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-            
-            displaySalesList();
-        }
-
-        function displaySalesList() {
-            const salesList = document.getElementById('sales-list');
-            const now = new Date();
-            let filteredSales = [];
-            
-            if (currentFilter === 'today') {
+            try {
+                // Update stats
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
-                filteredSales = sales.filter(s => {
+                
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                
+                // Today's sales
+                const todaySales = sales.filter(s => {
                     const saleDate = new Date(s.date);
                     saleDate.setHours(0, 0, 0, 0);
                     return saleDate.getTime() === today.getTime();
                 });
-            } else if (currentFilter === 'week') {
-                const weekAgo = new Date(now);
-                weekAgo.setDate(weekAgo.getDate() - 7);
-                filteredSales = sales.filter(s => new Date(s.date) >= weekAgo);
-            } else if (currentFilter === 'month') {
-                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-                filteredSales = sales.filter(s => new Date(s.date) >= monthStart);
-            }
-            
-            if (filteredSales.length === 0) {
-                salesList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"></path>
-                            </svg>
-                        </div>
-                        <div class="empty-state-text">لا توجد مبيعات في هذه الفترة</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Group by date
-            const grouped = {};
-            filteredSales.forEach(sale => {
-                const date = new Date(sale.date).toLocaleDateString('ar-EG');
-                if (!grouped[date]) {
-                    grouped[date] = [];
-                }
-                grouped[date].push(sale);
-            });
-            
-            salesList.innerHTML = Object.keys(grouped).map(date => {
-                const daySales = grouped[date];
-                const total = daySales.reduce((sum, s) => sum + s.price, 0);
-                const productNames = [...new Set(daySales.map(s => s.productName))];
+                const todayTotal = todaySales.reduce((sum, s) => sum + s.price, 0);
+                document.getElementById('today-sales').textContent = todayTotal.toFixed(2);
                 
-                return `
-                    <div class="sale-item">
-                        <div class="sale-header">
-                            <div class="sale-date">${date}</div>
-                            <div class="sale-total">${total.toFixed(2)} ج.م</div>
+                // Yesterday's sales
+                const yesterdaySales = sales.filter(s => {
+                    const saleDate = new Date(s.date);
+                    saleDate.setHours(0, 0, 0, 0);
+                    return saleDate.getTime() === yesterday.getTime();
+                });
+                const yesterdayTotal = yesterdaySales.reduce((sum, s) => sum + s.price, 0);
+                document.getElementById('yesterday-sales').textContent = yesterdayTotal.toFixed(2);
+                
+                // Month's sales
+                const monthSales = sales.filter(s => new Date(s.date) >= monthStart);
+                const monthTotal = monthSales.reduce((sum, s) => sum + s.price, 0);
+                document.getElementById('month-sales').textContent = monthTotal.toFixed(2);
+                
+                // Total products
+                document.getElementById('total-products').textContent = products.length;
+                
+                // Update sales list
+                displaySalesList();
+                
+                console.log('📊 لوحة التحكم تم تحديثها');
+                
+            } catch (error) {
+                console.error('❌ خطأ في تحديث لوحة التحكم:', error);
+            }
+        }
+
+        function filterSales(filter) {
+            try {
+                currentFilter = filter;
+                
+                // Update filter buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                if (event && event.currentTarget) {
+                    event.currentTarget.classList.add('active');
+                }
+                
+                displaySalesList();
+                
+                console.log(`🔍 تصفية المبيعات: ${filter}`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في تصفية المبيعات:', error);
+            }
+        }
+
+        function displaySalesList() {
+            try {
+                const salesList = document.getElementById('sales-list');
+                if (!salesList) return;
+                
+                const now = new Date();
+                let filteredSales = [];
+                
+                if (currentFilter === 'today') {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    filteredSales = sales.filter(s => {
+                        const saleDate = new Date(s.date);
+                        saleDate.setHours(0, 0, 0, 0);
+                        return saleDate.getTime() === today.getTime();
+                    });
+                } else if (currentFilter === 'week') {
+                    const weekAgo = new Date(now);
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    filteredSales = sales.filter(s => new Date(s.date) >= weekAgo);
+                } else if (currentFilter === 'month') {
+                    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                    filteredSales = sales.filter(s => new Date(s.date) >= monthStart);
+                }
+                
+                if (filteredSales.length === 0) {
+                    salesList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"></path>
+                                </svg>
+                            </div>
+                            <div class="empty-state-text">لا توجد مبيعات في هذه الفترة</div>
                         </div>
-                        <div class="sale-products">${daySales.length} عملية بيع: ${productNames.join('، ')}</div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                    return;
+                }
+                
+                // Group by date
+                const grouped = {};
+                filteredSales.forEach(sale => {
+                    const date = new Date(sale.date).toLocaleDateString('ar-EG');
+                    if (!grouped[date]) {
+                        grouped[date] = [];
+                    }
+                    grouped[date].push(sale);
+                });
+                
+                salesList.innerHTML = Object.keys(grouped).map(date => {
+                    const daySales = grouped[date];
+                    const total = daySales.reduce((sum, s) => sum + s.price, 0);
+                    const productNames = [...new Set(daySales.map(s => s.productName))];
+                    
+                    return `
+                        <div class="sale-item">
+                            <div class="sale-header">
+                                <div class="sale-date">${date}</div>
+                                <div class="sale-total">${total.toFixed(2)} ج.م</div>
+                            </div>
+                            <div class="sale-products">${daySales.length} عملية بيع: ${productNames.join('، ')}</div>
+                        </div>
+                    `;
+                }).join('');
+                
+                console.log(`📈 عرض ${filteredSales.length} عملية بيع`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في عرض المبيعات:', error);
+            }
         }
 
         // ============================================
         // Reports Functions
         // ============================================
         function updateReports() {
-            if (!storeData) return;
-            
-            // Store info
-            document.getElementById('report-store-name').textContent = storeData.name || '-';
-            document.getElementById('report-store-phone').textContent = storeData.phone || '-';
-            document.getElementById('report-store-email').textContent = storeData.email || '-';
-            
-            updateMonthlyReport();
+            try {
+                if (!storeData) return;
+                
+                // Store info
+                document.getElementById('report-store-name').textContent = storeData.name || '-';
+                document.getElementById('report-store-phone').textContent = storeData.phone || '-';
+                document.getElementById('report-store-email').textContent = storeData.email || '-';
+                
+                updateMonthlyReport();
+                
+                console.log('📊 التقارير تم تحديثها');
+                
+            } catch (error) {
+                console.error('❌ خطأ في تحديث التقارير:', error);
+            }
         }
 
         function updateMonthlyReport() {
-            const selectedMonth = parseInt(document.getElementById('month-select').value);
-            const currentYear = new Date().getFullYear();
-            
-            const monthSales = sales.filter(s => {
-                const saleDate = new Date(s.date);
-                return saleDate.getMonth() === selectedMonth && saleDate.getFullYear() === currentYear;
-            });
-            
-            const monthTotal = monthSales.reduce((sum, s) => sum + s.price, 0);
-            const monthCount = monthSales.length;
-            const monthAvg = monthCount > 0 ? monthTotal / monthCount : 0;
-            
-            document.getElementById('report-month-total').textContent = monthTotal.toFixed(2) + ' ج.م';
-            document.getElementById('report-month-count').textContent = monthCount;
-            document.getElementById('report-month-avg').textContent = monthAvg.toFixed(2) + ' ج.م';
-            
-            // Top products
-            const productCounts = {};
-            monthSales.forEach(sale => {
-                if (!productCounts[sale.productId]) {
-                    productCounts[sale.productId] = {
-                        name: sale.productName,
-                        count: 0,
-                        total: 0
-                    };
-                }
-                productCounts[sale.productId].count++;
-                productCounts[sale.productId].total += sale.price;
-            });
-            
-            const topProducts = Object.values(productCounts)
-                .sort((a, b) => b.count - a.count)
-                .slice(0, 5);
-            
-            const topProductsList = document.getElementById('top-products-list');
-            if (topProducts.length === 0) {
-                topProductsList.innerHTML = '<div class="empty-state-text" style="padding: 20px;">لا توجد مبيعات في هذا الشهر</div>';
-            } else {
-                topProductsList.innerHTML = topProducts.map((product, index) => `
-                    <div class="top-product-item">
-                        <div class="top-product-rank">${index + 1}</div>
-                        <div class="top-product-info">
-                            <div class="top-product-name">${product.name}</div>
-                            <div class="top-product-sales">${product.total.toFixed(2)} ج.م</div>
-                        </div>
-                        <div class="top-product-count">${product.count}</div>
-                    </div>
-                `).join('');
-            }
-            
-            // Daily sales
-            const dailySales = {};
-            monthSales.forEach(sale => {
-                const date = new Date(sale.date);
-                const dateStr = date.toLocaleDateString('ar-EG');
-                if (!dailySales[dateStr]) {
-                    dailySales[dateStr] = 0;
-                }
-                dailySales[dateStr] += sale.price;
-            });
-            
-            const dailySalesReport = document.getElementById('daily-sales-report');
-            if (Object.keys(dailySales).length === 0) {
-                dailySalesReport.innerHTML = '<div class="empty-state-text" style="padding: 20px;">لا توجد مبيعات في هذا الشهر</div>';
-            } else {
-                dailySalesReport.innerHTML = Object.keys(dailySales)
-                    .sort((a, b) => new Date(b) - new Date(a))
-                    .map(date => `
-                        <div class="report-item">
-                            <div class="report-label">${date}</div>
-                            <div class="report-value">${dailySales[date].toFixed(2)} ج.م</div>
+            try {
+                const selectedMonth = parseInt(document.getElementById('month-select').value);
+                const currentYear = new Date().getFullYear();
+                
+                const monthSales = sales.filter(s => {
+                    const saleDate = new Date(s.date);
+                    return saleDate.getMonth() === selectedMonth && saleDate.getFullYear() === currentYear;
+                });
+                
+                const monthTotal = monthSales.reduce((sum, s) => sum + s.price, 0);
+                const monthCount = monthSales.length;
+                const monthAvg = monthCount > 0 ? monthTotal / monthCount : 0;
+                
+                document.getElementById('report-month-total').textContent = monthTotal.toFixed(2) + ' ج.م';
+                document.getElementById('report-month-count').textContent = monthCount;
+                document.getElementById('report-month-avg').textContent = monthAvg.toFixed(2) + ' ج.م';
+                
+                // Top products
+                const productCounts = {};
+                monthSales.forEach(sale => {
+                    if (!productCounts[sale.productId]) {
+                        productCounts[sale.productId] = {
+                            name: sale.productName,
+                            count: 0,
+                            total: 0
+                        };
+                    }
+                    productCounts[sale.productId].count++;
+                    productCounts[sale.productId].total += sale.price;
+                });
+                
+                const topProducts = Object.values(productCounts)
+                    .sort((a, b) => b.count - a.count)
+                    .slice(0, 5);
+                
+                const topProductsList = document.getElementById('top-products-list');
+                if (topProducts.length === 0) {
+                    topProductsList.innerHTML = '<div class="empty-state-text" style="padding: 20px;">لا توجد مبيعات في هذا الشهر</div>';
+                } else {
+                    topProductsList.innerHTML = topProducts.map((product, index) => `
+                        <div class="top-product-item">
+                            <div class="top-product-rank">${index + 1}</div>
+                            <div class="top-product-info">
+                                <div class="top-product-name">${product.name}</div>
+                                <div class="top-product-sales">${product.total.toFixed(2)} ج.م</div>
+                            </div>
+                            <div class="top-product-count">${product.count}</div>
                         </div>
                     `).join('');
+                }
+                
+                // Daily sales
+                const dailySales = {};
+                monthSales.forEach(sale => {
+                    const date = new Date(sale.date);
+                    const dateStr = date.toLocaleDateString('ar-EG');
+                    if (!dailySales[dateStr]) {
+                        dailySales[dateStr] = 0;
+                    }
+                    dailySales[dateStr] += sale.price;
+                });
+                
+                const dailySalesReport = document.getElementById('daily-sales-report');
+                if (Object.keys(dailySales).length === 0) {
+                    dailySalesReport.innerHTML = '<div class="empty-state-text" style="padding: 20px;">لا توجد مبيعات في هذا الشهر</div>';
+                } else {
+                    dailySalesReport.innerHTML = Object.keys(dailySales)
+                        .sort((a, b) => new Date(b) - new Date(a))
+                        .map(date => `
+                            <div class="report-item">
+                                <div class="report-label">${date}</div>
+                                <div class="report-value">${dailySales[date].toFixed(2)} ج.م</div>
+                            </div>
+                        `).join('');
+                }
+                
+                console.log(`📊 تقرير الشهر ${selectedMonth + 1}: ${monthCount} عملية بيع`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في تحديث تقرير الشهر:', error);
             }
         }
 
@@ -2194,133 +2550,183 @@
         // Camera & Scanner Functions
         // ============================================
         function previewLogo(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById('preview-logo');
-                    preview.innerHTML = `<img src="${e.target.result}" alt="Logo">`;
+            try {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = document.getElementById('preview-logo');
+                        if (preview) {
+                            preview.innerHTML = `<img src="${e.target.result}" alt="Logo">`;
+                        }
+                        
+                        if (storeData) {
+                            storeData.logo = e.target.result;
+                            saveStoreData();
+                        }
+                    };
+                    reader.readAsDataURL(file);
                     
-                    if (storeData) {
-                        storeData.logo = e.target.result;
-                        saveStoreData();
-                    }
-                };
-                reader.readAsDataURL(file);
+                    console.log('🖼️ تم رفع صورة المتجر');
+                }
+            } catch (error) {
+                console.error('❌ خطأ في معاينة الصورة:', error);
             }
         }
 
         function toggleCamera() {
-            const cameraContainer = document.getElementById('camera-container');
-            
-            if (cameraContainer.classList.contains('active')) {
-                stopCamera();
-            } else {
-                startCamera();
+            try {
+                const cameraContainer = document.getElementById('camera-container');
+                
+                if (cameraContainer.classList.contains('active')) {
+                    stopCamera();
+                } else {
+                    startCamera();
+                }
+            } catch (error) {
+                console.error('❌ خطأ في تبديل الكاميرا:', error);
+                alert('لا يمكن الوصول للكاميرا. تأكد من السماح باستخدام الكاميرا.');
             }
         }
 
         function startCamera() {
-            const cameraContainer = document.getElementById('camera-container');
-            cameraContainer.classList.add('active');
-            
-            cameraScanner = new Html5Qrcode("camera-preview");
-            
-            cameraScanner.start(
-                { facingMode: "environment" },
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 }
-                },
-                (decodedText) => {
-                    document.getElementById('product-barcode').value = decodedText;
+            try {
+                const cameraContainer = document.getElementById('camera-container');
+                cameraContainer.classList.add('active');
+                
+                console.log('📷 تشغيل الكاميرا...');
+                
+                cameraScanner = new Html5Qrcode("camera-preview");
+                
+                cameraScanner.start(
+                    { facingMode: "environment" },
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    },
+                    (decodedText) => {
+                        console.log('📷 تم مسح باركود:', decodedText);
+                        document.getElementById('product-barcode').value = decodedText;
+                        stopCamera();
+                    },
+                    (error) => {
+                        // تجاهل الأخطاء البسيطة في المسح
+                    }
+                ).catch(err => {
+                    console.error('❌ خطأ في تشغيل الكاميرا:', err);
+                    alert('لا يمكن الوصول للكاميرا. تأكد من السماح باستخدام الكاميرا.');
                     stopCamera();
-                },
-                (error) => {
-                    console.log('Camera scanning error:', error);
-                }
-            ).catch(err => {
-                console.error('Camera error:', err);
-                alert('لا يمكن الوصول للكاميرا. تأكد من السماح باستخدام الكاميرا.');
+                });
+                
+            } catch (error) {
+                console.error('❌ خطأ في بدء الكاميرا:', error);
                 stopCamera();
-            });
+            }
         }
 
         function stopCamera() {
-            const cameraContainer = document.getElementById('camera-container');
-            cameraContainer.classList.remove('active');
-            
-            if (cameraScanner) {
-                cameraScanner.stop().then(() => {
-                    cameraScanner = null;
-                }).catch(err => {
-                    console.error('Error stopping camera:', err);
-                    cameraScanner = null;
-                });
+            try {
+                const cameraContainer = document.getElementById('camera-container');
+                cameraContainer.classList.remove('active');
+                
+                if (cameraScanner) {
+                    cameraScanner.stop().then(() => {
+                        cameraScanner = null;
+                        console.log('📷 الكاميرا متوقفة');
+                    }).catch(err => {
+                        console.error('❌ خطأ في إيقاف الكاميرا:', err);
+                        cameraScanner = null;
+                    });
+                }
+            } catch (error) {
+                console.error('❌ خطأ في إيقاف الكاميرا:', error);
+                cameraScanner = null;
             }
         }
 
         function startScanner() {
-            const scannerReader = document.getElementById('scanner-reader');
-            scannerReader.classList.add('active');
-            document.getElementById('start-scanner').style.display = 'none';
-            document.getElementById('stop-scanner').style.display = 'block';
-            
-            scanner = new Html5Qrcode("scanner-reader");
-            
-            scanner.start(
-                { facingMode: "environment" },
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 }
-                },
-                (decodedText) => {
-                    const product = products.find(p => p.barcode === decodedText);
-                    
-                    if (product) {
-                        showSaleModal(product.id);
-                        stopScanner();
-                    } else {
-                        const result = document.getElementById('scanner-result');
-                        result.innerHTML = `
-                            <div class="empty-state-text">المنتج غير موجود: ${decodedText}</div>
-                            <br>
-                            <button class="btn-primary" onclick="addScannedProduct('${decodedText}')">إضافة منتج جديد</button>
-                        `;
-                        result.classList.add('show');
+            try {
+                const scannerReader = document.getElementById('scanner-reader');
+                scannerReader.classList.add('active');
+                document.getElementById('start-scanner').style.display = 'none';
+                document.getElementById('stop-scanner').style.display = 'block';
+                
+                console.log('🔍 تشغيل الماسح الضوئي...');
+                
+                scanner = new Html5Qrcode("scanner-reader");
+                
+                scanner.start(
+                    { facingMode: "environment" },
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    },
+                    (decodedText) => {
+                        console.log('🔍 تم مسح باركود:', decodedText);
+                        const product = products.find(p => p.barcode === decodedText);
+                        
+                        if (product) {
+                            showSaleModal(product.id);
+                            stopScanner();
+                        } else {
+                            const result = document.getElementById('scanner-result');
+                            result.innerHTML = `
+                                <div class="empty-state-text">المنتج غير موجود: ${decodedText}</div>
+                                <br>
+                                <button class="btn-primary" onclick="addScannedProduct('${decodedText}')">إضافة منتج جديد</button>
+                            `;
+                            result.classList.add('show');
+                        }
+                    },
+                    (error) => {
+                        // تجاهل الأخطاء البسيطة في المسح
                     }
-                },
-                (error) => {
-                    console.log('Scanner error:', error);
-                }
-            ).catch(err => {
-                console.error('Scanner error:', err);
-                alert('لا يمكن الوصول للكاميرا. تأكد من السماح باستخدام الكاميرا.');
+                ).catch(err => {
+                    console.error('❌ خطأ في تشغيل الماسح:', err);
+                    alert('لا يمكن الوصول للكاميرا. تأكد من السماح باستخدام الكاميرا.');
+                    stopScanner();
+                });
+                
+            } catch (error) {
+                console.error('❌ خطأ في بدء الماسح:', error);
                 stopScanner();
-            });
+            }
         }
 
         function stopScanner() {
-            const scannerReader = document.getElementById('scanner-reader');
-            scannerReader.classList.remove('active');
-            document.getElementById('start-scanner').style.display = 'block';
-            document.getElementById('stop-scanner').style.display = 'none';
-            
-            if (scanner) {
-                scanner.stop().then(() => {
-                    scanner = null;
-                }).catch(err => {
-                    console.error('Error stopping scanner:', err);
-                    scanner = null;
-                });
+            try {
+                const scannerReader = document.getElementById('scanner-reader');
+                scannerReader.classList.remove('active');
+                document.getElementById('start-scanner').style.display = 'block';
+                document.getElementById('stop-scanner').style.display = 'none';
+                
+                if (scanner) {
+                    scanner.stop().then(() => {
+                        scanner = null;
+                        console.log('🔍 الماسح متوقف');
+                    }).catch(err => {
+                        console.error('❌ خطأ في إيقاف الماسح:', err);
+                        scanner = null;
+                    });
+                }
+            } catch (error) {
+                console.error('❌ خطأ في إيقاف الماسح:', error);
+                scanner = null;
             }
         }
 
         function addScannedProduct(barcode) {
-            document.getElementById('product-barcode').value = barcode;
-            document.getElementById('scanner-result').classList.remove('show');
-            switchTab('add');
-            document.getElementById('product-name').focus();
+            try {
+                document.getElementById('product-barcode').value = barcode;
+                document.getElementById('scanner-result').classList.remove('show');
+                switchTab('add');
+                document.getElementById('product-name').focus();
+                
+                console.log(`➕ إضافة منتج جديد بالباركود: ${barcode}`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في إضافة المنتج الممسوح:', error);
+            }
         }
     </script>
 </body>
